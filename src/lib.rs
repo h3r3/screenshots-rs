@@ -3,6 +3,7 @@ pub use display_info::DisplayInfo;
 
 mod image;
 pub use image::Image;
+pub use image::PngImage;
 
 #[cfg(target_os = "macos")]
 mod darwin;

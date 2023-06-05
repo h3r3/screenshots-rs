@@ -17,20 +17,20 @@ fn main() {
   for screen in screens {
     println!("capturer {screen:?}");
     let mut image = screen.capture().unwrap();
-    let mut buffer = image.buffer();
-    fs::write(format!("target/{}.png", screen.display_info.id), buffer).unwrap();
+    let mut png_image = PngImage::from_image(image).unwrap();
+    fs::write(format!("target/{}.png", screen.display_info.id), png_image.bytes()).unwrap();
 
     image = screen.capture_area(300, 300, 300, 300).unwrap();
-    buffer = image.buffer();
-    fs::write(format!("target/{}-2.png", screen.display_info.id), buffer).unwrap();
+    png_image = PngImage::from_image(image).unwrap();
+    fs::write(format!("target/{}-2.png", screen.display_info.id), png_image.bytes()).unwrap();
   }
 
   let screen = Screen::from_point(100, 100).unwrap();
   println!("capturer {screen:?}");
 
   let image = screen.capture_area(300, 300, 300, 300).unwrap();
-  let buffer = image.buffer();
-  fs::write("target/capture_display_with_point.png", buffer).unwrap();
+  let png_image = PngImage::from_image(image).unwrap();
+  fs::write("target/capture_display_with_point.png", png_image.bytes()).unwrap();
 
   println!("Elapsed time: {:?}", start.elapsed());
 }
@@ -50,13 +50,22 @@ The `Screen` struct represents a screen capturer and provides the following meth
 
 ### `Image`
 
-The `Image` struct represents a screen screenshot image and provides the following methods:
+The `Image` struct represents an raw screen screenshot image and provides the following methods:
 
 - `Image::new(width, height, buffer)`: Get an image from the width, height, and RGBA buffer, returns an `Image`.
-- `Image::from_bgra(width, height, buffer)`: Get an image from the width, height, and BGRA buffer, returns `Result<Image, EncodingError>`.
+- `Image::from_bgra(width, height, buffer)`: Get an image from the width, height, and BGRA buffer, returns `Image`.
 - `image.width()`: Get the image width, returns `u32`.
 - `image.height()`: Get the image height, returns `u32`.
-- `image.buffer()`: Get the image buffer, returns `Vec<u8>`.
+- `image.bytes()`: Get the image RGBA buffer, returns `Vec<u8>`.
+
+### `PngImage`
+
+The `PngImage` struct represents a PNG encoded image.
+- `PngImage::new(width, height, buffer)`: Get a PNG encoded image from the width, height, and PNG encoded buffer, returns a `PngImage`.
+- `PngImage::from_image(image)`: Get an PNG encoded image from a raw Image, returns `Result<PngImage, EncodingError>`.
+- `PngImage.width()`: Get the image width, returns `u32`.
+- `PngImage.height()`: Get the image height, returns `u32`.
+- `PngImage.bytes()`: Get the image PNG encoded buffer, returns `Vec<u8>`.
 
 ## Linux Requirements
 
